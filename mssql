@@ -11,4 +11,9 @@ do
   esac
 done
 
+if [ -z "$SERVER" ] || [ -z "$USERNAME" ] || [ -z "$PASSWORD" ]; then
+  echo "Error: Missing required options -S, -U, or -P" >&2
+  exit 1
+fi
+
 podman run -it mcr.microsoft.com/mssql-tools /opt/mssql-tools/bin/sqlcmd -S $SERVER -U $USERNAME -P $PASSWORD
