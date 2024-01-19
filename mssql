@@ -1,12 +1,13 @@
 #!/bin/bash
 
-while getopts S:U:P: option
+while getopts S:U:P:Q: option
 do
   case "${option}"
   in
     S) SERVER=${OPTARG};;
     U) USERNAME=${OPTARG};;
     P) PASSWORD=${OPTARG};;
+    Q) QUERY=${OPTARG};;
     *) echo "Invalid option: -$OPTARG" >&2;;
   esac
 done
@@ -16,4 +17,9 @@ if [ -z "$SERVER" ] || [ -z "$USERNAME" ] || [ -z "$PASSWORD" ]; then
   exit 1
 fi
 
-podman run -it mcr.microsoft.com/mssql-tools /opt/mssql-tools/bin/sqlcmd -S $SERVER -U $USERNAME -P $PASSWORD
+if [ -z "$QUERY" ]; then
+  podman run -it mcr.microsoft.com/mssql-tools /opt/mssql-tools/bin/sqlcmd -S $SERVER -U $USERNAME -P $PASSWORD
+else
+  podman run -it mcr.microsoft.com/mssql-tools /opt/mssql-tools/bin/sqlcmd -S $SERVER -U $USERNAME -P $PASSWORD -Q "$QUERY"
+fi
+
