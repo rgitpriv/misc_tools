@@ -1,0 +1,37 @@
+#!/bin/bash
+
+# wrapper script for tmux to have some screen shortcuts
+
+attach_or_list() {
+    if [[ -n "$1" ]]; then
+        tmux attach-session -t "$1"
+        exit 0
+    fi
+
+    session_count=$(tmux list-sessions 2>/dev/null | wc -l)
+    if [[ $session_count -eq 0 ]]; then
+        echo "No tmux sessions found."
+        exit 1
+    elif [[ $session_count -eq 1 ]]; then
+        single_session=$(tmux list-sessions | cut -d: -f1)
+        tmux attach-session -t "$single_session"
+    else
+        tmux list-sessions
+    fi
+}
+
+# Main script execution
+if [[ -z "$1" ]]; then
+    tmux new-session
+else
+    case "$1" in
+        -x|-r)
+            attach_or_list "$2"
+            ;;
+        *)
+            echo "Usage: $0 [-x|-r [session-id]]"
+            exit 1
+            ;;
+    esac
+fi
+
